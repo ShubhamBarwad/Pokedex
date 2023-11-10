@@ -11,39 +11,46 @@ function ListContainer() {
     const [pokemonData, setPokemonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [next, setNext] = useState();
+    const [prev, setPrev] = useState();
+    const [count, setCount] = useState(1);
 
     useEffect(()=>{
       setIsLoading(true);
-      if(next){
-        axios.get(next)
+      axios.get('https://pokeapi.co/api/v2/pokemon')
+      .then(response => {
+        console.log(response);
+        if(response.data.previous){
+          setPrev(response.data.previous);
+        }
+        setNext(response.data.next);
+        setPokemonList(response.data.results);
+        return axios.all(response.data.results.map(pk => axios.get(pk.url)));
+      })
+      .then(response => {
+        setPokemonData(response);
+        setIsLoading(false);
+      })
+    }, []);
+
+    const loadNextPrev = (next) => {
+      setIsLoading(true);
+      axios.get(next)
         .then(response => {
-          // debugger;
+          if(response.data.previous){
+            setPrev(response.data.previous);
+          }
           setNext(response.data.next);
           setPokemonList(response.data.results);
-          // debugger;
+          setCount(count+1);
           return axios.all(response.data.results.map(pk => axios.get(pk.url)))
         })
         .then(response => {
-          debugger;
-          setPokemonData(response)
+          setPokemonData(response);
           setIsLoading(false);
+          window.scrollTo(0,0);
         })
-      }else{
-        axios.get('https://pokeapi.co/api/v2/pokemon')
-        .then(response => {
-          // debugger;
-          setNext(response.data.next);
-          setPokemonList(response.data.results);
-          // debugger;
-          return axios.all(response.data.results.map(pk => axios.get(pk.url)))
-        })
-        .then(response => {
-          // debugger;
-          setPokemonData(response)
-          setIsLoading(false);
-        })
-      }
-    }, [next]);
+    }
+
     const stringify = (num) => {
         let idString = '';
         for(let i = 0; i < 6-JSON.stringify(num).length; i++){
@@ -53,14 +60,16 @@ function ListContainer() {
         return idString;
     }
   return (
-    <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between'>
-      {isLoading && <Loader/>}
-        {pokemonData.map(el=>
-                <Card key={el.name} data={el} stringify={stringify}/>
-            )
-        }
-        <MyPagination next={next} setNext={setNext}/>
-    </div>
+    <>
+      <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between'>
+        {isLoading && <Loader/>}
+          {pokemonData.map(el=>
+                  <Card key={el.name} data={el} stringify={stringify}/>
+              )
+          }
+      </div>
+      {!isLoading && <MyPagination next={next} prev={prev} loadNextPrev={loadNextPrev} count={count}/>}
+    </>
   )
 }
 
