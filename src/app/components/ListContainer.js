@@ -18,7 +18,6 @@ function ListContainer() {
       setIsLoading(true);
       axios.get('https://pokeapi.co/api/v2/pokemon')
       .then(response => {
-        console.log(response);
         if(response.data.previous){
           setPrev(response.data.previous);
         }
@@ -32,7 +31,8 @@ function ListContainer() {
       })
     }, []);
 
-    const loadNextPrev = (next) => {
+    const loadNextPrev = (next, num) => {
+      if((count===1 && num>0) || (count > 1)){
       setIsLoading(true);
       axios.get(next)
         .then(response => {
@@ -41,7 +41,7 @@ function ListContainer() {
           }
           setNext(response.data.next);
           setPokemonList(response.data.results);
-          setCount(count+1);
+          setCount(count+num);
           return axios.all(response.data.results.map(pk => axios.get(pk.url)))
         })
         .then(response => {
@@ -49,8 +49,9 @@ function ListContainer() {
           setIsLoading(false);
           window.scrollTo(0,0);
         })
+      }
     }
-
+    
     const stringify = (num) => {
         let idString = '';
         for(let i = 0; i < 6-JSON.stringify(num).length; i++){
@@ -64,7 +65,7 @@ function ListContainer() {
       <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between'>
         {isLoading && <Loader/>}
           {pokemonData.map(el=>
-                  <Card key={el.name} data={el} stringify={stringify}/>
+                  <Card key={el.data.id} data={el} stringify={stringify}/>
               )
           }
       </div>

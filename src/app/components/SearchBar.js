@@ -1,16 +1,16 @@
 "use client";
-
-import React, { useContext, useEffect } from 'react'
 import { useState } from 'react'
+import { useSelector } from 'react-redux';
 
 export default function SearchBar() {
     const [isVisible, setIsVisible] = useState(false);
     const [result, setResult] = useState([]);
-    const [pokemons, setPokemons]= useState([]);
+    // const [pokemons, setPokemons]= useState([]);
+    const pokemonList = useSelector(state => state.pokemonList.list);
 
     const filterResult = (e)=>{
         const value = e.target.value.toLowerCase();
-        setResult(pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(value)));
+        setResult(pokemonList.filter(pokemon => pokemon.name.toLowerCase().includes(value)));
         result.length>0? setIsVisible(true) : setIsVisible(false);
         (value == null || value == undefined || value == '')  && closeResults();
     }
@@ -28,7 +28,7 @@ export default function SearchBar() {
         {isVisible && <div className='w-full absolute z-10 bg-white border rounded-md shadow-md'>
             <ul>
                 {result.map((pokemon) =>(
-                    <a href='#' className='block px-2 py-2 hover:bg-gray-50 capitalize text-sm text-gray-500' key={pokemon}>{pokemon}</a>
+                    <a href='#' className='block px-2 py-2 hover:bg-gray-50 capitalize text-sm text-gray-500' key={pokemon.name}>{pokemon.name}</a>
                 ))}
             </ul>
         </div>}

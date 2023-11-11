@@ -1,11 +1,10 @@
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material'
 
 function MyPagination({ next, prev, loadNextPrev, count }) {
-  console.log(next, prev);
   const functionString = 'load';
   const handleClick = (str)=>{
-    str==='next' && loadNextPrev(next);
-    str==='prev' && loadNextPrev(prev);
+    str==='next' && loadNextPrev(next, 1);
+    str==='prev' && loadNextPrev(prev, -1);
   }
 
   return (
