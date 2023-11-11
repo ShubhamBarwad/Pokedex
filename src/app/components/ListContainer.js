@@ -5,17 +5,20 @@ import Card from './Card';
 import axios from 'axios';
 import Loader from './Loader';
 import MyPagination from './MyPagination';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoadingState } from '@/feature/pokemonList/pokeballLoaderSlice';
 
 function ListContainer() {
     const [pokemonList, setPokemonList] = useState([]);
     const [pokemonData, setPokemonData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
+    // const [isLoading, setIsLoading] = useState(false);
     const [next, setNext] = useState();
     const [prev, setPrev] = useState();
     const [count, setCount] = useState(1);
 
     useEffect(()=>{
-      setIsLoading(true);
+      setLoading(true);
       axios.get('https://pokeapi.co/api/v2/pokemon')
       .then(response => {
         if(response.data.previous){
@@ -27,13 +30,13 @@ function ListContainer() {
       })
       .then(response => {
         setPokemonData(response);
-        setIsLoading(false);
+        setLoading(false);
       })
     }, []);
 
     const loadNextPrev = (next, num) => {
       if((count===1 && num>0) || (count > 1)){
-      setIsLoading(true);
+      setLoading(true);
       axios.get(next)
         .then(response => {
           if(response.data.previous){
@@ -46,10 +49,14 @@ function ListContainer() {
         })
         .then(response => {
           setPokemonData(response);
-          setIsLoading(false);
+          setLoading(false);
           window.scrollTo(0,0);
         })
       }
+    }
+
+    const setLoading = (toggleValue) => {
+      dispatch(setLoadingState(toggleValue));
     }
     
     const stringify = (num) => {
@@ -63,13 +70,12 @@ function ListContainer() {
   return (
     <>
       <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between'>
-        {isLoading && <Loader/>}
           {pokemonData.map(el=>
                   <Card key={el.data.id} data={el} stringify={stringify}/>
               )
           }
       </div>
-      {!isLoading && <MyPagination next={next} prev={prev} loadNextPrev={loadNextPrev} count={count}/>}
+      <MyPagination next={next} prev={prev} loadNextPrev={loadNextPrev} count={count}/>
     </>
   )
 }
