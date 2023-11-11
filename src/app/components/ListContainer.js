@@ -1,21 +1,23 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Card from './Card';
 import axios from 'axios';
 import Loader from './Loader';
 import MyPagination from './MyPagination';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoadingState } from '@/feature/pokemonList/pokeballLoaderSlice';
+import ViewSwitcher from './ViewSwitcher';
 
 function ListContainer() {
     const [pokemonList, setPokemonList] = useState([]);
     const [pokemonData, setPokemonData] = useState([]);
     const dispatch = useDispatch();
-    // const [isLoading, setIsLoading] = useState(false);
     const [next, setNext] = useState();
     const [prev, setPrev] = useState();
     const [count, setCount] = useState(1);
+    const view = useSelector(state => state.view);
+    const listContainerDiv = useRef();
 
     useEffect(()=>{
       setLoading(true);
@@ -66,16 +68,30 @@ function ListContainer() {
         }
         idString = idString.concat(JSON.stringify(num));
         return idString;
+    } 
+    useEffect(() => {
+      changeView(listContainerDiv.current, view.view);
+    }, [view])
+    
+    const changeView = (element, view) => {
+      view==='list' && element.classList.replace('grid-cols-responsive', 'grid-cols-1')
+      view==='grid' && element.classList.replace('grid-cols-1', 'grid-cols-responsive')
+      // if(view==='list'){
+      //   element.classList = [];
+      //   element.classList.add(['w-full'], ['flex'], ['flex-col'])
+      // }
     }
+
   return (
     <>
-      <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between'>
+      <div className='w-full py-10 grid grid-cols-responsive gap-x-10 gap-y-4 justify-center md:justify-between' ref={listContainerDiv}>
           {pokemonData.map(el=>
-                  <Card key={el.data.id} data={el} stringify={stringify}/>
+                  <Card key={el.data.id} data={el} stringify={stringify} view={view.view}/>
               )
           }
       </div>
       <MyPagination next={next} prev={prev} loadNextPrev={loadNextPrev} count={count}/>
+      {/* <ViewSwitcher/> */}
     </>
   )
 }
