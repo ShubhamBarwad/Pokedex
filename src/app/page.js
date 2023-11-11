@@ -1,20 +1,18 @@
-'use client';
-
+'use client'
 import Container from "./components/Container";
+import { Provider } from "react-redux";
+import store from "./store";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default function Home() {
-  // const [pokemons, setPokemons] = useState([]);
-  // useEffect(() => {
-  //   if(!pokemons.length){
-  //       axios.get('https://pokeapi.co/api/v2/pokemon?limit=10000')
-  //       .then((response) => {
-  //           setPokemons(response.data.results);
-  //       })
-  //   }
-  // }, [])
   return (
     <main>
-        <Container/>
+      <Provider store={store}>
+        <Header/>
+          <Container/>
+        <Footer/>
+      </Provider>
     </main>
   )
 }
