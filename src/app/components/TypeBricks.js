@@ -99,6 +99,6 @@ export default function TypeBricks({type}) {
   const currentType = types.find(matchTypes);
 
   return (
-    <div className={`w-24 py-1 rounded-md text-center uppercase ${currentType.background} ${currentType.text}`} >{currentType.name}</div>
+    <div className={`md:w-24 py-1 w-16 text-xs md:text-base rounded-md text-center uppercase ${currentType.background} ${currentType.text}`} >{currentType.name}</div>
   )
 }
