@@ -33,7 +33,7 @@ module.exports = {
       gridTemplateColumns: {
         'responsive': 'repeat(auto-fit, 220px)'
       }
-    },
+    },  
   },
   plugins: [],
 }

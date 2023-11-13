@@ -1,12 +1,23 @@
 "use client";
-import { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { setList } from '@/feature/pokemonList/pokemonListSlice';
+import axios from 'axios';
 
 export default function SearchBar() {
     const [isVisible, setIsVisible] = useState(false);
     const [result, setResult] = useState([]);
-    // const [pokemons, setPokemons]= useState([]);
     const pokemonList = useSelector(state => state.pokemonList.list);
+    const  ALL_POKEMON_ENDPOINT = 'https://pokeapi.co/api/v2/pokemon?limit=1500'
+    const view = useSelector(state => state.view);
+    const dispatch = useDispatch();
+    
+    useEffect(() => {
+        axios.get(ALL_POKEMON_ENDPOINT)
+        .then(response => {
+            dispatch(setList(response.data.results));
+        });
+    }, [])
 
     const filterResult = (e)=>{
         const value = e.target.value.toLowerCase();
@@ -28,7 +39,7 @@ export default function SearchBar() {
         {isVisible && <div className='w-full absolute z-10 bg-white border rounded-md shadow-md'>
             <ul>
                 {result.map((pokemon) =>(
-                    <a href='#' className='block px-2 py-2 hover:bg-gray-50 capitalize text-sm text-gray-500' key={pokemon.name}>{pokemon.name}</a>
+                    <a href={`/pokemon/${pokemon.name}/`} className='block px-2 py-2 hover:bg-gray-50 capitalize text-sm text-gray-500' key={pokemon.name}>{pokemon.name}</a>
                 ))}
             </ul>
         </div>}
