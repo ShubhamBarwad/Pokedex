@@ -1,17 +1,11 @@
 import { Inter } from 'next/font/google'
-import './globals.css'
 import 'material-icons/iconfont/material-icons.css'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import store from './store'
-import { Provider } from 'react-redux'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Pokedex',
-  description: 'Pokedex App',
-}
+    title: 'Details Page'
+  }
 
 export default function RootLayout({ children }) {
   return (
